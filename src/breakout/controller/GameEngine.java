@@ -13,6 +13,7 @@ public class GameEngine {
     private final Paddle paddle;
     private final BreakoutCanvas canvas;
 
+    private int lives = Constants.INITIAL_LIVES;
     private boolean ballLaunched;
     private boolean leftPressed;
     private boolean rightPressed;
@@ -42,12 +43,23 @@ public class GameEngine {
             ball.placeOnPaddle(paddle);
         }else {
             ball.move();
-            if (ball.getX() < 0 || ball.getX() + ball.getDiameter() > Constants.CANVAS_WIDTH){
-                ball.reverseX();
-            }
-            if (ball.getY() < Constants.HUD_HEIGHT){
-                ball.reverseY();
-            }
+            handleWallCollisions();
+            handlePaddleCollision();
+        }
+    }
+
+    private void handlePaddleCollision(){
+        if (ball.getY() >= Constants.PADDLE_Y && (ball.getX() +ball.getDiameter() > paddle.getX() && ball.getX() < paddle.getX() + paddle.getWidth()) && ball.getVy() > 0){
+            ball.bounceOffPaddle(paddle);
+        }
+    }
+
+    private void handleWallCollisions(){
+        if (ball.getX() < 0 || ball.getX() + ball.getDiameter() > Constants.CANVAS_WIDTH){
+            ball.reverseX();
+        }
+        if (ball.getY() < Constants.HUD_HEIGHT){
+            ball.reverseY();
         }
     }
 
