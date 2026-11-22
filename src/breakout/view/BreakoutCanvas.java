@@ -29,7 +29,7 @@ public class BreakoutCanvas {
         this.paddleRect.setColor(PADDLE_COLOR);
         this.canvas.add(paddleRect);
 
-        this.ballGOval = new GOval(Constants.BALL_DIAMETER * 2, Constants.BALL_DIAMETER * 2);
+        this.ballGOval = new GOval(Constants.BALL_DIAMETER , Constants.BALL_DIAMETER);
         this.ballGOval.setFilled(true);
         this.ballGOval.setFillColor(BALL_COLOR);
         this.ballGOval.setColor(BALL_COLOR);
@@ -38,5 +38,6 @@ public class BreakoutCanvas {
 
     public void render(Paddle paddle, Ball ball) {
         paddleRect.setLocation(paddle.getX(), paddle.getY());
+        ballGOval.setLocation(ball.getX(), ball.getY());
     }
 }

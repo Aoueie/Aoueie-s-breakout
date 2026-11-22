@@ -17,7 +17,7 @@ public class Ball {
 
     public void placeOnPaddle(Paddle paddle){
         this.x = paddle.getCenterX() - radius;
-        this.y = paddle.getY() - radius * 2;
+        this.y = paddle.getY() - getDiameter();
         this.vx = 0;
         this.vy = 0;
     }
