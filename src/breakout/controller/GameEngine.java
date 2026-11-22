@@ -45,11 +45,22 @@ public class GameEngine {
             ball.move();
             handleWallCollisions();
             handlePaddleCollision();
+            handleBottomBoundary();
+        }
+    }
+
+    private void handleBottomBoundary(){
+        if (ball.getY() + ball.getDiameter() >= Constants.CANVAS_HEIGHT){
+            --lives;
+            if (lives > 0){
+                ballLaunched = false;
+                System.out.println("GAME OVER!");
+            }
         }
     }
 
     private void handlePaddleCollision(){
-        if (ball.getY() >= Constants.PADDLE_Y && (ball.getX() +ball.getDiameter() > paddle.getX() && ball.getX() < paddle.getX() + paddle.getWidth()) && ball.getVy() > 0){
+        if ((ball.getY() + ball.getDiameter() >= paddle.getY() && ball.getY() < paddle.getY() ) && (ball.getX() +ball.getDiameter() > paddle.getX() && ball.getX() < paddle.getX() + paddle.getWidth()) && ball.getVy() > 0){
             ball.bounceOffPaddle(paddle);
         }
     }
