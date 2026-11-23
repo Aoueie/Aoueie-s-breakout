@@ -57,6 +57,17 @@ public class GameEngine {
         }
     }
 
+    private void resetGame(){
+        paddle.reset();
+        score = 0;
+        lives = Constants.INITIAL_LIVES;
+        remainingBricks = Constants.BRICK_COLS * Constants.BRICK_ROWS;
+        for (int i = 0; i < Constants.BRICK_COLS * Constants.BRICK_ROWS; i++){
+            bricks[i].reset();
+        }
+        state = GameState.READY;
+    }
+
     private void movePaddle(){
         if (leftPressed) {
             paddle.moveLeft();
@@ -86,8 +97,15 @@ public class GameEngine {
             double overlapBottom = bricks[i].getY() + bricks[i].getHeight() - ball.getY();
             double minOverlapX = Math.min(overlapLeft, overlapRight);
             double minOverlapY = Math.min(overlapTop, overlapBottom);
+            if (remainingBricks == 0){
+                state = GameState.VICTORY;
+            }
             if (overlapBottom > 0 && overlapLeft > 0 && overlapRight > 0 && overlapTop > 0) {
                 bricks[i].hit();
+                if (bricks[i].hit()){
+                    score += Constants.BRICK_SCORE;
+                    remainingBricks--;
+                }
                 if (minOverlapX < minOverlapY) {
                     ball.reverseX();
                     return;
@@ -138,6 +156,14 @@ public class GameEngine {
         } else if (keyCode == KeyEvent.VK_SPACE && state == GameState.READY){
             ball.launch();
             state = GameState.RUNNING;
+        } else if (keyCode == KeyEvent.VK_P){
+            if (state == GameState.RUNNING){
+                state = GameState.PAUSED;
+            } else if (state == GameState.PAUSED){
+                state = GameState.RUNNING;
+            }
+        } else if (keyCode == KeyEvent.VK_R){
+            resetGame();
         }
     }
 
