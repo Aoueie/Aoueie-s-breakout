@@ -1,5 +1,6 @@
 package breakout.controller;
 
+import breakout.model.GameState;
 import breakout.model.Ball;
 import breakout.model.Brick;
 import breakout.model.Paddle;
@@ -15,9 +16,10 @@ public class GameEngine {
     private final Paddle paddle;
     private final BreakoutCanvas canvas;
 
+    private int remainingBricks = Constants.BRICK_COLS * Constants.BRICK_ROWS;
     private int score = 0;
     private int lives = Constants.INITIAL_LIVES;
-    private boolean ballLaunched;
+    private GameState state;
     private boolean leftPressed;
     private boolean rightPressed;
 
@@ -28,7 +30,7 @@ public class GameEngine {
         this.bricks = new Brick[Constants.BRICK_ROWS * Constants.BRICK_COLS];
         createBricks();
         canvas.setupBricks(bricks);
-        this.ballLaunched = false;
+        this.state = GameState.READY;
         ball.placeOnPaddle(paddle);
         render();
     }
@@ -39,19 +41,27 @@ public class GameEngine {
     }
 
     private void update() {
+        switch (state) {
+            case READY:
+                movePaddle();
+                ball.placeOnPaddle(paddle);
+                break;
+            case RUNNING:
+                ball.move();
+                movePaddle();
+                handleWallCollisions();
+                handlePaddleCollision();
+                handleBottomBoundary();
+                break;
+        }
+    }
+
+    private void movePaddle(){
         if (leftPressed) {
             paddle.moveLeft();
         }
         if (rightPressed) {
             paddle.moveRight();
-        }
-        if (!ballLaunched){
-            ball.placeOnPaddle(paddle);
-        }else {
-            ball.move();
-            handleWallCollisions();
-            handlePaddleCollision();
-            handleBottomBoundary();
         }
     }
 
@@ -68,7 +78,9 @@ public class GameEngine {
         if (ball.getY() + ball.getDiameter() >= Constants.CANVAS_HEIGHT){
             --lives;
             if (lives > 0){
-                ballLaunched = false;
+                state = GameState.READY;
+            }else{
+                state = GameState.GAME_OVER;
                 System.out.println("GAME OVER!");
             }
         }
@@ -98,9 +110,9 @@ public class GameEngine {
             leftPressed = true;
         } else if (keyCode == KeyEvent.VK_RIGHT) {
             rightPressed = true;
-        } else if (keyCode == KeyEvent.VK_SPACE && !ballLaunched){
+        } else if (keyCode == KeyEvent.VK_SPACE && state == GameState.READY){
             ball.launch();
-            ballLaunched = true;
+            state = GameState.RUNNING;
         }
     }
 
