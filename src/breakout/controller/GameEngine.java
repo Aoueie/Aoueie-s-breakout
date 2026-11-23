@@ -51,6 +51,7 @@ public class GameEngine {
                 movePaddle();
                 handleWallCollisions();
                 handlePaddleCollision();
+                handleBrickCollisions();
                 handleBottomBoundary();
                 break;
         }
@@ -71,6 +72,30 @@ public class GameEngine {
             int col = i % Constants.BRICK_COLS;
             bricks[i] = new Brick(Constants.BRICK_OFFSET_X + col * Constants.BRICK_STEP_X, Constants.BRICK_OFFSET_Y + row * Constants.BRICK_STEP_Y, row, 1
             );
+        }
+    }
+
+    private void handleBrickCollisions(){
+        for (int i = 0; i < Constants.BRICK_ROWS * Constants.BRICK_COLS; i++) {
+            if (bricks[i].isDestroyed()) {
+                continue;
+            }
+            double overlapLeft = ball.getX() + ball.getDiameter() - bricks[i].getX();
+            double overlapRight = bricks[i].getX() + bricks[i].getWidth() - ball.getX();
+            double overlapTop = ball.getY() + ball.getDiameter() - bricks[i].getY();
+            double overlapBottom = bricks[i].getY() + bricks[i].getHeight() - ball.getY();
+            double minOverlapX = Math.min(overlapLeft, overlapRight);
+            double minOverlapY = Math.min(overlapTop, overlapBottom);
+            if (overlapBottom > 0 && overlapLeft > 0 && overlapRight > 0 && overlapTop > 0) {
+                bricks[i].hit();
+                if (minOverlapX < minOverlapY) {
+                    ball.reverseX();
+                    return;
+                } else {
+                    ball.reverseY();
+                    return;
+                }
+            }
         }
     }
 
