@@ -1,6 +1,7 @@
 package breakout.controller;
 
 import breakout.model.Ball;
+import breakout.model.Brick;
 import breakout.model.Paddle;
 import breakout.util.Constants;
 import breakout.view.BreakoutCanvas;
@@ -9,10 +10,12 @@ import java.awt.event.KeyEvent;
 
 public class GameEngine {
 
+    private final Brick[] bricks;
     private final Ball ball;
     private final Paddle paddle;
     private final BreakoutCanvas canvas;
 
+    private int score = 0;
     private int lives = Constants.INITIAL_LIVES;
     private boolean ballLaunched;
     private boolean leftPressed;
@@ -22,6 +25,9 @@ public class GameEngine {
         this.canvas = canvas;
         this.paddle = new Paddle();
         this.ball = new Ball();
+        this.bricks = new Brick[Constants.BRICK_ROWS * Constants.BRICK_COLS];
+        createBricks();
+        canvas.setupBricks(bricks);
         this.ballLaunched = false;
         ball.placeOnPaddle(paddle);
         render();
@@ -46,6 +52,15 @@ public class GameEngine {
             handleWallCollisions();
             handlePaddleCollision();
             handleBottomBoundary();
+        }
+    }
+
+    private void createBricks(){
+        for (int i = 0; i < Constants.BRICK_ROWS * Constants.BRICK_COLS; i++){
+            int row = i / Constants.BRICK_COLS;
+            int col = i % Constants.BRICK_COLS;
+            bricks[i] = new Brick(Constants.BRICK_OFFSET_X + col * Constants.BRICK_STEP_X, Constants.BRICK_OFFSET_Y + row * Constants.BRICK_STEP_Y, row, 1
+            );
         }
     }
 
@@ -75,7 +90,7 @@ public class GameEngine {
     }
 
     private void render() {
-        canvas.render(paddle, ball);
+        canvas.render(paddle, ball, bricks);
     }
 
     public void onKeyPressed(int keyCode) {
