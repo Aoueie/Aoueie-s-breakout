@@ -85,6 +85,9 @@ public class BreakoutCanvas {
             this.bricksRect[i].setFilled(true);
             this.bricksRect[i].setFillColor(BRICKS_COLOR[row]);
             this.bricksRect[i].setColor(BRICKS_COLOR[row]);
+            if (bricks[i].getHitPoints() == 2) {
+                this.bricksRect[i].setColor(new Color(246, 246, 246));
+            }
             this.bricksRect[i].setLocation(bricks[i].getX(), bricks[i].getY());
             this.canvas.add(bricksRect[i]);
             messageLabel.sendToFront();

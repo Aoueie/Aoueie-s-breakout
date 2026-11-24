@@ -86,8 +86,13 @@ public class GameEngine {
         for (int i = 0; i < Constants.BRICK_ROWS * Constants.BRICK_COLS; i++){
             int row = i / Constants.BRICK_COLS;
             int col = i % Constants.BRICK_COLS;
-            bricks[i] = new Brick(Constants.BRICK_OFFSET_X + col * Constants.BRICK_STEP_X, Constants.BRICK_OFFSET_Y + row * Constants.BRICK_STEP_Y, row, 1
-            );
+            if (i / Constants.BRICK_COLS < 2){
+                bricks[i] = new Brick(Constants.BRICK_OFFSET_X + col * Constants.BRICK_STEP_X, Constants.BRICK_OFFSET_Y + row * Constants.BRICK_STEP_Y, row, Constants.STRONG_BRICK_HP
+                );
+            }else {
+                bricks[i] = new Brick(Constants.BRICK_OFFSET_X + col * Constants.BRICK_STEP_X, Constants.BRICK_OFFSET_Y + row * Constants.BRICK_STEP_Y, row, Constants.NORMAL_BRICK_HP
+                );
+            }
         }
     }
 
@@ -107,7 +112,6 @@ public class GameEngine {
                     score += Constants.BRICK_SCORE;
                     remainingBricks--;
                 }
-                bricks[i].hit();
                 if (minOverlapX < minOverlapY) {
                     ball.reverseX();
                     return;

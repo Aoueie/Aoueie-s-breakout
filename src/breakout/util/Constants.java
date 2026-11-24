@@ -36,6 +36,8 @@ public final class Constants {
     public static final double BRICK_OFFSET_Y = 60.0;
     public static final double BRICK_STEP_X = BRICK_WIDTH + BRICK_GAP;
     public static final double BRICK_STEP_Y = BRICK_HEIGHT + BRICK_GAP;
+    public static final int STRONG_BRICK_HP = 2;
+    public static final int NORMAL_BRICK_HP = 1;
 
     // hud data
     public static final int BRICK_SCORE = 100;
