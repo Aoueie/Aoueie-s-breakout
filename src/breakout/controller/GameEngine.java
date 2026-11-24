@@ -6,10 +6,14 @@ import breakout.model.Brick;
 import breakout.model.Paddle;
 import breakout.util.Constants;
 import breakout.view.BreakoutCanvas;
+import breakout.model.storage.HighScoreStorage;
+import breakout.model.storage.InMemoryScoreStorage;
 
 import java.awt.event.KeyEvent;
 
 public class GameEngine {
+
+    private HighScoreStorage scoreStorage;
 
     private final Brick[] bricks;
     private final Ball ball;
@@ -31,6 +35,7 @@ public class GameEngine {
         createBricks();
         canvas.setupBricks(bricks);
         this.state = GameState.READY;
+        this.scoreStorage = new InMemoryScoreStorage();
         ball.placeOnPaddle(paddle);
         render();
     }
@@ -97,15 +102,12 @@ public class GameEngine {
             double overlapBottom = bricks[i].getY() + bricks[i].getHeight() - ball.getY();
             double minOverlapX = Math.min(overlapLeft, overlapRight);
             double minOverlapY = Math.min(overlapTop, overlapBottom);
-            if (remainingBricks == 0){
-                state = GameState.VICTORY;
-            }
             if (overlapBottom > 0 && overlapLeft > 0 && overlapRight > 0 && overlapTop > 0) {
-                bricks[i].hit();
                 if (bricks[i].hit()){
                     score += Constants.BRICK_SCORE;
                     remainingBricks--;
                 }
+                bricks[i].hit();
                 if (minOverlapX < minOverlapY) {
                     ball.reverseX();
                     return;
@@ -115,6 +117,10 @@ public class GameEngine {
                 }
             }
         }
+        if (remainingBricks == 0){
+            scoreStorage.saveHighScore(score);
+            state = GameState.VICTORY;
+        }
     }
 
     private void handleBottomBoundary(){
@@ -123,8 +129,9 @@ public class GameEngine {
             if (lives > 0){
                 state = GameState.READY;
             }else{
-                state = GameState.GAME_OVER;
+                scoreStorage.saveHighScore(score);
                 System.out.println("GAME OVER!");
+                state = GameState.GAME_OVER;
             }
         }
     }
@@ -138,6 +145,7 @@ public class GameEngine {
     private void handleWallCollisions(){
         if (ball.getX() < 0 || ball.getX() + ball.getDiameter() > Constants.CANVAS_WIDTH){
             ball.reverseX();
+            ball.getOnCanvas();
         }
         if (ball.getY() < Constants.HUD_HEIGHT){
             ball.reverseY();
@@ -145,7 +153,7 @@ public class GameEngine {
     }
 
     private void render() {
-        canvas.render(paddle, ball, bricks);
+        canvas.render(paddle, ball, bricks, score, lives, scoreStorage.loadHighScore(), state);
     }
 
     public void onKeyPressed(int keyCode) {

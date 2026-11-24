@@ -31,6 +31,14 @@ public class Ball {
         y += vy;
     }
 
+    public void getOnCanvas() {
+        if (x + getDiameter() > Constants.CANVAS_WIDTH) {
+            x = Constants.CANVAS_WIDTH - getDiameter();
+        } else if (x < 0) {
+            x = 0;
+        }
+    }
+
     public void reverseX() {
         vx = - vx;
     }
